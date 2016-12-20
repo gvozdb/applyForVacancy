@@ -406,3 +406,48 @@ applyForVacancy.combo.Engine = function (config) {
 };
 Ext.extend(applyForVacancy.combo.Engine, MODx.combo.ComboBox);
 Ext.reg('afv-combo-resource-engine', applyForVacancy.combo.Engine);
+
+
+/**
+ * @param config
+ * @constructor
+ */
+applyForVacancy.combo.Vendor = function (config) {
+    config = config || {};
+
+    Ext.applyIf(config, {
+        name: 'vendor',
+        fieldLabel: config['name'] || 'vendor',
+        hiddenName: config['name'] || 'vendor',
+        displayField: 'display',
+        valueField: 'value',
+        fields: ['value', 'display'],
+        url: applyForVacancy.config['connector_url'],
+        baseParams: {
+            action: 'mgr/combo/getmsvendors',
+        },
+        pageSize: 20,
+        typeAhead: false,
+        editable: true,
+        anchor: '100%',
+        listEmptyText: '<div style="padding: 7px;">' + _('afv_combo_list_empty') + '</div>',
+        tpl: new Ext.XTemplate('\
+            <tpl for="."><div class="x-combo-list-item afv-combo__list-item">\
+                <span>\
+                    {display}\
+                </span>\
+            </div></tpl>',
+            {compiled: true}
+        ),
+    });
+    applyForVacancy.combo.Vendor.superclass.constructor.call(this, config);
+
+    // При раскрытии списка подгружаем данные заново
+    this.on('expand', function () {
+        var combo = Ext.getCmp(config.id);
+        var comboStore = combo.getStore();
+        comboStore.load();
+    });
+};
+Ext.extend(applyForVacancy.combo.Vendor, MODx.combo.ComboBox);
+Ext.reg('afv-combo-vendor', applyForVacancy.combo.Vendor);

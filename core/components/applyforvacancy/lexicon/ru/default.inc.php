@@ -14,6 +14,7 @@ $_lang['afv_grid_id'] = 'ID';
 $_lang['afv_grid_actions'] = 'Действия';
 $_lang['afv_grid_resource'] = 'Ресурс';
 $_lang['afv_grid_user'] = 'Пользователь';
+$_lang['afv_grid_vendor'] = 'Менеджер';
 $_lang['afv_grid_createdon'] = 'Дата отклика';
 $_lang['afv_grid_status'] = 'Статус';
 $_lang['afv_grid_dob'] = 'ДР';

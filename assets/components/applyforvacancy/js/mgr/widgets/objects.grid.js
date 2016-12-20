@@ -29,6 +29,7 @@ Ext.extend(applyForVacancy.grid.Objects, applyForVacancy.grid.Default, {
             'engine',
             'createdon',
             'createdon_formatted',
+            'vendor',
             'status',
             'status_formatted',
             'actions',
@@ -50,7 +51,7 @@ Ext.extend(applyForVacancy.grid.Objects, applyForVacancy.grid.Default, {
                 header: _('afv_grid_resource'),
                 dataIndex: 'resource_formatted',
                 width: 150,
-                sortable: false,
+                sortable: true,
                 renderer: function (value, p, record) {
                     return String.format('<a href="?a=resource/update&id={0}" class="x-grid-link">{1}</a>', record.data['resource'], Ext.util.Format.htmlEncode(value));
                 },
@@ -94,6 +95,15 @@ Ext.extend(applyForVacancy.grid.Objects, applyForVacancy.grid.Default, {
         r.push({
             header: _('afv_grid_createdon'),
             dataIndex: 'createdon_formatted',
+            sortable: true,
+            fixed: true,
+            resizable: false,
+            width: 150,
+        });
+
+        r.push({
+            header: _('afv_grid_vendor'),
+            dataIndex: 'vendor',
             sortable: true,
             fixed: true,
             resizable: false,
@@ -171,6 +181,32 @@ Ext.extend(applyForVacancy.grid.Objects, applyForVacancy.grid.Default, {
                 id: config.id + '__tbar-engine',
                 name: 'engine',
                 emptyText: _('afv_grid_engine') + '...',
+                width: 150,
+                listeners: {
+                    select: {
+                        fn: function (combo) {
+                            this._doFilter(combo);
+                        }, scope: this
+                    },
+                },
+            }, {
+                xtype: 'afv-combo-vendor',
+                id: config.id + '__tbar-vendor',
+                name: 'vendor',
+                emptyText: _('afv_grid_vendor') + '...',
+                width: 150,
+                listeners: {
+                    select: {
+                        fn: function (combo) {
+                            this._doFilter(combo);
+                        }, scope: this
+                    },
+                },
+            }, {
+                xtype: 'afv-combo-status',
+                id: config.id + '__tbar-status',
+                name: 'status',
+                emptyText: _('afv_grid_status') + '...',
                 width: 150,
                 listeners: {
                     select: {

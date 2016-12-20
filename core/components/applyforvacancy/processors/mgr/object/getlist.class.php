@@ -11,6 +11,16 @@ class afvObjectGetListProcessor extends modObjectGetListProcessor
     /**
      * @return boolean|string
      */
+    public function initialize()
+    {
+        $this->setProperty('sort', str_replace('_formatted', '', $this->getProperty('sort')));
+
+        return parent::initialize();
+    }
+
+    /**
+     * @return boolean|string
+     */
     public function beforeQuery()
     {
         if (!$this->checkPermissions()) {
@@ -27,12 +37,14 @@ class afvObjectGetListProcessor extends modObjectGetListProcessor
      */
     public function prepareQueryBeforeCount(xPDOQuery $c)
     {
-        $c->leftJoin('msProduct', 'msProduct', 'msProduct.id = afvObject.resource');
-        $c->leftJoin('msProductData', 'msProductData', 'msProductData.id = msProduct.id');
-        $c->leftJoin('modUserProfile', 'modUserProfile', 'modUserProfile.internalKey = afvObject.user');
+        $c->innerJoin('msProduct', 'msProduct', 'msProduct.id = afvObject.resource');
+        $c->innerJoin('msProductData', 'msProductData', 'msProductData.id = msProduct.id');
+        $c->innerJoin('modUserProfile', 'modUserProfile', 'modUserProfile.internalKey = afvObject.user');
+        $c->leftJoin('msVendor', 'msVendor', 'msVendor.id = msProductData.vendor');
 
         $c->select(array($this->modx->getSelectColumns('afvObject', 'afvObject')));
         $c->select(array('msProduct.pagetitle as resource_formatted'));
+        $c->select(array('msVendor.name as vendor'));
         $c->select(array(
             'msProductData.position_type as position_type',
             'msProductData.vessel_type as vessel_type',
@@ -41,8 +53,8 @@ class afvObjectGetListProcessor extends modObjectGetListProcessor
         ));
         $c->select(array('modUserProfile.fullname as user_formatted'));
 
-        //
-        foreach (array('resource', 'user') as $v) {
+        // Фильтр по свойствам основного объекта
+        foreach (array('resource', 'user', 'status') as $v) {
             if (${$v} = (int)$this->getProperty($v)) {
                 $c->where(array(
                     'afvObject.' . $v => ${$v},
@@ -50,8 +62,8 @@ class afvObjectGetListProcessor extends modObjectGetListProcessor
             }
         }
 
-        // Фильтр
-        foreach (array('position_type', 'vessel_type', 'dwt', 'engine') as $v) {
+        // Фильтр по свойствам товара
+        foreach (array('position_type', 'vessel_type', 'dwt', 'engine', 'vendor') as $v) {
             if (${$v} = $this->getProperty($v, 0)) {
                 if (${$v} == '_') {
                     $c->where(array(
